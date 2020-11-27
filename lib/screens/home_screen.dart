@@ -1,4 +1,4 @@
-import 'package:cineflex/providers/data_provider.dart';
+import 'package:cineflex/providers/movie_provider.dart';
 import 'package:cineflex/screens/home_tab_screens.dart';
 
 import 'package:cineflex/widgets/top_bar.dart';
@@ -23,7 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   MenuTab selectedTab = MenuTab.Home;
   @override
   void initState() {
-    context.read<DataProvider>().getPopularMovies();
+    context.read<MovieProvider>().getPopularMovies();
     super.initState();
   }
 

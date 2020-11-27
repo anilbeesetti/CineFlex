@@ -53,7 +53,7 @@ class _PageViewWidgetState extends State<PageViewWidget> {
                   context,
                   CupertinoPageRoute(
                     builder: (context) => MovieScreen(
-                      id: movies[index].id,
+                      movie: movies[index],
                     ),
                   ));
             },

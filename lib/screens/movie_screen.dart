@@ -1,16 +1,19 @@
 import 'dart:math';
 
 import 'package:cineflex/constansts.dart';
-import 'package:cineflex/providers/data_provider.dart';
+import 'package:cineflex/models/movie_model.dart';
+import 'package:cineflex/providers/movie_provider.dart';
 import 'package:cineflex/widgets/cast_card.dart';
+import 'package:cineflex/widgets/information_text.dart';
+import 'package:cineflex/widgets/title_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MovieScreen extends StatefulWidget {
-  final int id;
+  final Movie movie;
 
-  const MovieScreen({Key key, @required this.id}) : super(key: key);
+  const MovieScreen({Key key, @required this.movie}) : super(key: key);
 
   @override
   _MovieScreenState createState() => _MovieScreenState();
@@ -19,13 +22,13 @@ class MovieScreen extends StatefulWidget {
 class _MovieScreenState extends State<MovieScreen> {
   @override
   void initState() {
-    context.read<DataProvider>().getMovieInfo(widget.id);
+    context.read<MovieProvider>().getMovieInfo(widget.movie.id);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var movie = context.watch<DataProvider>().movieInfo;
+    var movie = context.watch<MovieProvider>().movieInfo;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -41,9 +44,10 @@ class _MovieScreenState extends State<MovieScreen> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
-                        movie.posterPath == ''
+                        widget.movie.posterPath == '' ||
+                                widget.movie.posterPath == null
                             ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
-                            : 'https://image.tmdb.org/t/p/w780/${movie.posterPath}',
+                            : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
                       ),
                     ),
                   ),
@@ -66,7 +70,7 @@ class _MovieScreenState extends State<MovieScreen> {
                     alignment: Alignment.center,
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Text(
-                      movie.title,
+                      widget.movie.title,
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 25),
                     ),
@@ -87,20 +91,14 @@ class _MovieScreenState extends State<MovieScreen> {
                 )
               ],
             ),
-            Padding(
-              padding: EdgeInsets.only(right: 20, bottom: 10, left: 20, top: 4),
-              child: Text(
-                'The Plot',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16,
-                    fontFamily: 'Lato'),
-              ),
+            TitleText(
+              title: 'The Plot',
+              padding: EdgeInsets.only(right: 20, bottom: 10, left: 20, top: 5),
             ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
               child: Text(
-                movie.overview,
+                widget.movie.overview,
                 maxLines: 3,
                 style: TextStyle(
                   fontSize: 13,
@@ -108,55 +106,16 @@ class _MovieScreenState extends State<MovieScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 15),
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.blueGrey[500],
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Director : ',
-                      style: TextStyle(
-                        color: kAccentColor,
-                      ),
-                    ),
-                    TextSpan(text: context.watch<DataProvider>().director)
-                  ],
-                ),
-              ),
+            InformationText(
+              text: 'Director : ',
+              subText: context.watch<MovieProvider>().director,
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.blueGrey[500],
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Writers : ',
-                      style: TextStyle(
-                        color: kAccentColor,
-                      ),
-                    ),
-                    TextSpan(text: context.watch<DataProvider>().writers)
-                  ],
-                ),
-              ),
+            InformationText(
+              text: 'Writers : ',
+              subText: context.watch<MovieProvider>().writers,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Text(
-                'The Cast',
-                style: TextStyle(
-                  fontWeight: FontWeight.w300,
-                  fontSize: 16,
-                ),
-              ),
+            TitleText(
+              title: 'The Cast',
             ),
             Container(
               height: 200,
@@ -164,57 +123,43 @@ class _MovieScreenState extends State<MovieScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 scrollDirection: Axis.horizontal,
                 itemCount:
-                    min(9, context.watch<DataProvider>().cast.length + 1),
+                    min(9, context.watch<MovieProvider>().cast.length + 1),
                 itemBuilder: (context, index) {
                   var itemcount =
-                      min(9, context.watch<DataProvider>().cast.length + 1);
-                  var cast = context.watch<DataProvider>().cast;
+                      min(9, context.watch<MovieProvider>().cast.length + 1);
+                  var cast = context.watch<MovieProvider>().cast;
                   if (index == itemcount - 1) {
-                    return Padding(
-                      padding: const EdgeInsets.only(left: 10),
-                      child: Container(
-                        alignment: Alignment.center,
+                    return Container(
+                      alignment: Alignment.center,
+                      child: FlatButton(
                         child: Text(
                           'View More',
                           style: TextStyle(fontSize: 18, color: kAccentColor),
                         ),
+                        onPressed: () {},
                       ),
                     );
                   }
-                  return CastCard(cast: cast[index]);
+                  return CastCard(
+                    cast: cast[index],
+                  );
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-              child: RichText(
-                text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.blueGrey[500],
-                  ),
-                  children: [
-                    TextSpan(
-                      text: 'Genres : ',
-                      style: TextStyle(
-                        color: kAccentColor,
-                      ),
-                    ),
-                    TextSpan(text: context.watch<DataProvider>().writers)
-                  ],
-                ),
-              ),
+            TitleText(title: 'More Details'),
+            InformationText(
+              text: 'Genres : ',
+              subText: context.watch<MovieProvider>().genres,
             ),
-            Padding(
-              padding: EdgeInsets.only(right: 20, left: 20, top: 30),
-              child: Text(
-                'Recommendations',
-                style: TextStyle(
-                    fontWeight: FontWeight.w300,
-                    fontSize: 16,
-                    fontFamily: 'Lato'),
-              ),
+            InformationText(
+              text: 'Release Date : ',
+              subText: movie.releaseDate,
             ),
+            InformationText(
+              text: 'Language : ',
+              subText: movie.orginalLanguage == 'en' ? 'English' : '',
+            ),
+            TitleText(title: 'Recommendations'),
             RecommendationsList()
           ],
         ),
@@ -232,20 +177,20 @@ class RecommendationsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 180,
-      margin: EdgeInsets.only(top: 20),
       child: ListView.builder(
         padding: EdgeInsets.only(left: 20),
         scrollDirection: Axis.horizontal,
-        itemCount: context.watch<DataProvider>().recommendations.length,
+        itemCount: context.watch<MovieProvider>().recommendations.length,
         itemBuilder: (context, index) {
-          var recommendations = context.watch<DataProvider>().recommendations;
+          var recommendations = context.watch<MovieProvider>().recommendations;
           return GestureDetector(
             onTap: () {
               Navigator.pushReplacement(
                   context,
                   CupertinoPageRoute(
-                    builder: (context) =>
-                        MovieScreen(id: recommendations[index].id),
+                    builder: (context) => MovieScreen(
+                      movie: recommendations[index],
+                    ),
                   ));
             },
             child: Column(

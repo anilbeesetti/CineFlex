@@ -1,16 +1,20 @@
+import 'package:flutter/foundation.dart';
+
 class Movie {
   final int id;
   final String title;
+  final String overview;
   final String posterPath;
   final String backdropPath;
   final String orginalLanguage;
 
   Movie({
-    this.id,
-    this.title,
-    this.posterPath,
-    this.backdropPath,
-    this.orginalLanguage,
+    @required this.id,
+    @required this.title,
+    @required this.overview,
+    @required this.posterPath,
+    @required this.backdropPath,
+    @required this.orginalLanguage,
   });
 }
 

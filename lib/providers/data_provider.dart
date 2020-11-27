@@ -12,9 +12,11 @@ class DataProvider with ChangeNotifier {
   String _director = '';
   String _writers = '';
   MovieInfo _movieInfo = MovieInfo();
+  String _genres = '';
 
   String get director => _director;
   String get writers => _writers;
+  String get genres => _genres;
   List<Movie> get popularMovies => _popularMovies;
   List<Cast> get cast => _cast;
   List<Crew> get crew => _crew;
@@ -34,6 +36,14 @@ class DataProvider with ChangeNotifier {
       crewNames.add(crew[i].name);
     }
     _writers = crewNames.join(", ");
+  }
+
+  void _setGenres() {
+    var genresList = [];
+    for (var i = 0; i < movieInfo.genres.length; i++) {
+      genresList.add(movieInfo.genres[i]['name']);
+    }
+    _genres = genresList.join(', ');
   }
 
   void getPopularMovies() async {
@@ -60,6 +70,7 @@ class DataProvider with ChangeNotifier {
       _popularMovies.add(
         Movie(
           id: movie['id'],
+          overview: movie['overview'],
           title: movie['original_title'],
           backdropPath: movie['backdrop_path'],
           orginalLanguage: movie['original_language'],
@@ -101,6 +112,7 @@ class DataProvider with ChangeNotifier {
     _movieInfo.title = responseData['original_title'];
     _movieInfo.releaseDate = responseData['release_date'];
     _movieInfo.overview = responseData['overview'];
+    _setGenres();
     notifyListeners();
   }
 
@@ -110,6 +122,7 @@ class DataProvider with ChangeNotifier {
       _recommendations.add(
         Movie(
           id: movie['id'],
+          overview: movie['overview'],
           title: movie['original_title'],
           backdropPath: movie['backdrop_path'],
           orginalLanguage: movie['original_language'],
