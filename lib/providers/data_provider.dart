@@ -8,14 +8,18 @@ class DataProvider with ChangeNotifier {
   List<Movie> _popularMovies = [];
   List<Cast> _cast = [];
   List<Crew> _crew = [];
+  List<Movie> _recommendations = [];
   String _director = '';
   String _writers = '';
+  MovieInfo _movieInfo = MovieInfo();
 
   String get director => _director;
   String get writers => _writers;
   List<Movie> get popularMovies => _popularMovies;
   List<Cast> get cast => _cast;
   List<Crew> get crew => _crew;
+  MovieInfo get movieInfo => _movieInfo;
+  List<Movie> get recommendations => _recommendations;
 
   void _setDirector() {
     var crew = _crew.firstWhere((element) => element.job == 'Director');
@@ -40,8 +44,12 @@ class DataProvider with ChangeNotifier {
   void getMovieInfo(int id) async {
     _cast = [];
     _crew = [];
+    _movieInfo = MovieInfo();
+    _recommendations = [];
     var responseData = await TmdbApi.getMovieCredits(id);
     _addCast(responseData);
+    _getMovieDetails(id);
+    _getRecommendations(id);
     _setDirector();
     _setWriters();
     notifyListeners();
@@ -53,12 +61,9 @@ class DataProvider with ChangeNotifier {
         Movie(
           id: movie['id'],
           title: movie['original_title'],
-          genreId: movie['genre_ids'],
-          overview: movie['overview'],
           backdropPath: movie['backdrop_path'],
           orginalLanguage: movie['original_language'],
           posterPath: movie['poster_path'],
-          releaseDate: movie['release_date'],
         ),
       );
     });
@@ -85,7 +90,33 @@ class DataProvider with ChangeNotifier {
       ));
     });
   }
-}
 
-const string =
-    'https://www.themoviedb.org/assets/2/v4/glyphicons/basic/glyphicons-basic-4-user-grey-d8fe957375e70239d6abdd549fd7568c89281b2179b5f4470e2e12895792dfa5.jpg';
+  void _getMovieDetails(int id) async {
+    var responseData = await TmdbApi.getMovie(id);
+    _movieInfo.id = responseData['id'];
+    _movieInfo.backdropPath = responseData['backdrop_path'];
+    _movieInfo.orginalLanguage = responseData['original_language'];
+    _movieInfo.genres = responseData['genres'];
+    _movieInfo.posterPath = responseData['poster_path'];
+    _movieInfo.title = responseData['original_title'];
+    _movieInfo.releaseDate = responseData['release_date'];
+    _movieInfo.overview = responseData['overview'];
+    notifyListeners();
+  }
+
+  void _getRecommendations(int id) async {
+    var responseData = await TmdbApi.getRecommendations(id);
+    responseData['results'].forEach((movie) {
+      _recommendations.add(
+        Movie(
+          id: movie['id'],
+          title: movie['original_title'],
+          backdropPath: movie['backdrop_path'],
+          orginalLanguage: movie['original_language'],
+          posterPath: movie['poster_path'],
+        ),
+      );
+    });
+    notifyListeners();
+  }
+}

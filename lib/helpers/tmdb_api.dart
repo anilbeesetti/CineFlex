@@ -21,13 +21,25 @@ class TmdbApi {
 
   static Future<dynamic> getMovieCredits(int id) async {
     var finalUrl = url + 'movie/$id/credits?api_key=$_ApiKey&language=en-US';
-    var respone = await http.get(finalUrl);
+    var respone = await _getResponse(finalUrl);
     return jsonDecode(respone.body);
   }
 
   static Future<dynamic> getMovie(int id) async {
     var finalUrl = url + 'movie/$id?api_key=$_ApiKey&language=en-US';
-    var response = await http.get(finalUrl);
+    var response = await _getResponse(finalUrl);
     return jsonDecode(response.body);
   }
+
+  static Future<dynamic> getRecommendations(int id) async {
+    var finalUrl =
+        url + 'movie/$id/recommendations?api_key=$_ApiKey&language=en-US';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
+
+  // static Future<dynamic> getTrending() async {
+  //   var finalUrl =
+  //       'https://api.themoviedb.org/3/trending/all/day?api_key=62453b82f98db30d9a499cc700064b45';
+  // }
 }

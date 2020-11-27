@@ -4,9 +4,6 @@ class Movie {
   final String posterPath;
   final String backdropPath;
   final String orginalLanguage;
-  final String overview;
-  final String releaseDate;
-  final List genreId;
 
   Movie({
     this.id,
@@ -14,10 +11,27 @@ class Movie {
     this.posterPath,
     this.backdropPath,
     this.orginalLanguage,
-    this.overview,
-    this.releaseDate,
-    this.genreId,
   });
 }
 
-class MovieInfo {}
+class MovieInfo {
+  int id;
+  String title;
+  String posterPath;
+  String backdropPath;
+  String overview;
+  String orginalLanguage;
+  List genres;
+  String releaseDate;
+
+  MovieInfo({
+    this.id = 0,
+    this.title = '',
+    this.posterPath = '',
+    this.overview = '',
+    this.backdropPath = '',
+    this.orginalLanguage = '',
+    this.genres = const [],
+    this.releaseDate = '',
+  });
+}
