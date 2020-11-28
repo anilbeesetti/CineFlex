@@ -1,4 +1,5 @@
 import 'package:cineflex/screens/movie_screen.dart';
+import 'package:cineflex/screens/tv_show_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -42,20 +43,31 @@ class _PageViewWidgetState extends State<PageViewWidget> {
         controller: _pageController,
         itemCount: widget.collection.length,
         itemBuilder: (context, index) {
-          var movies = widget.collection;
+          var media = widget.collection;
           final distortionRatio =
               (1 - ((pageOffset - index).abs() * 0.3)).clamp(0.0, 1.0);
           distortionValue = Curves.easeOut.transform(distortionRatio);
-
           return GestureDetector(
             onTap: () {
-              Navigator.push(
+              if (media[index].mediaType == 'movie') {
+                Navigator.push(
                   context,
                   CupertinoPageRoute(
                     builder: (context) => MovieScreen(
-                      movie: movies[index],
+                      movie: media[index],
                     ),
-                  ));
+                  ),
+                );
+              } else if (media[index].mediaType == 'tv') {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => TvShowScreen(
+                      tvShow: media[index],
+                    ),
+                  ),
+                );
+              }
             },
             child: Transform.scale(
               // padding: EdgeInsets.only(
@@ -72,7 +84,7 @@ class _PageViewWidgetState extends State<PageViewWidget> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
-                      'https://image.tmdb.org/t/p/w500/${movies[index].backdropPath}',
+                      'https://image.tmdb.org/t/p/w500/${media[index].backdropPath}',
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -82,7 +94,7 @@ class _PageViewWidgetState extends State<PageViewWidget> {
                     child: Container(
                       width: 200,
                       child: Text(
-                        movies[index].title,
+                        media[index].title != null ? media[index].title : '',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,

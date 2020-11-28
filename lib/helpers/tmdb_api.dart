@@ -38,8 +38,36 @@ class TmdbApi {
     return jsonDecode(response.body);
   }
 
-  // static Future<dynamic> getTrending() async {
+  static Future<dynamic> getTrending() async {
+    var finalUrl = url + 'trending/all/day?api_key=$_ApiKey&language=en-US';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
+
+  static Future<dynamic> getPopularTvShows() async {
+    var finalUrl = url + 'tv/popular?api_key=$_ApiKey&language=en-US&page=1';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
+
+  // static Future<dynamic> getLatest(String mediaType) async {
   //   var finalUrl =
-  //       'https://api.themoviedb.org/3/trending/all/day?api_key=62453b82f98db30d9a499cc700064b45';
+  //       url + '$mediaType/latest?api_key=$_ApiKey&language=en-US&page=1';
+  //   var response = await _getResponse(finalUrl);
+  //   return jsonDecode(response.body);
   // }
+
+  static Future<dynamic> getTopRated(String mediaType, {int page}) async {
+    var finalUrl = url +
+        '$mediaType/top_rated?api_key=$_ApiKey&language=en-US&page=${page ?? 1}';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
+
+  static Future<dynamic> getNowPlaying(String mediaType) async {
+    var finalUrl =
+        url + '$mediaType/now_playing?api_key=$_ApiKey&language=en-US&page=1';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
 }

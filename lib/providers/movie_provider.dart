@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 
 class MovieProvider with ChangeNotifier {
   List<Movie> _popularMovies = [];
+  List<Movie> _topRatedMovies = [];
+  List<Movie> _nowPlayingMovies = [];
   List<Cast> _cast = [];
   List<Crew> _crew = [];
   List<Movie> _recommendations = [];
@@ -18,30 +20,56 @@ class MovieProvider with ChangeNotifier {
   String get writers => _writers;
   String get genres => _genres;
   List<Movie> get popularMovies => _popularMovies;
+  List<Movie> get topRatedMovies => _topRatedMovies;
+  List<Movie> get nowPlayingMovies => _nowPlayingMovies;
   List<Cast> get cast => _cast;
   List<Crew> get crew => _crew;
   List<Movie> get recommendations => _recommendations;
   MovieInfo get movieInfo => _movieInfo;
 
-  void _setGenres() {
-    var genresList = [];
-    for (var i = 0; i < movieInfo.genres.length; i++) {
-      genresList.add(movieInfo.genres[i]['name']);
-    }
-    _genres = genresList.join(', ');
-  }
-
   void getPopularMovies() async {
     var responseData = await TmdbApi.getPopularMoives();
-    _addMovies(responseData);
+    _addMovies(responseData, _popularMovies);
   }
 
-  void _addMovies(responseData) {
+  void gettopRatedMovies({int page}) async {
+    var responseData = await TmdbApi.getTopRated('movie', page: page);
+    _addMovies(responseData, _topRatedMovies);
+  }
+
+  void getNowPlayingMovies() async {
+    var responseData = await TmdbApi.getNowPlaying('movie');
+    _addMovies(responseData, _nowPlayingMovies);
+  }
+
+  void getMovieInfo(int id) async {
+    _cast = [];
+    _crew = [];
+    _director = '';
+    _writers = '';
+    _movieInfo = MovieInfo();
+    _recommendations = [];
+    var responseData = await TmdbApi.getMovieCredits(id);
+    _addCast(responseData);
+    _getMovieDetails(id);
+    _getRecommendations(id);
+    _director = DataHelper.setDirector(crew);
+    _writers = DataHelper.setWriters(crew);
+
+    notifyListeners();
+  }
+
+  ///
+  /// Helper Methods ///
+  ///
+
+  void _addMovies(responseData, List mediaList) {
     responseData['results'].forEach((movie) {
-      _popularMovies.add(
+      mediaList.add(
         Movie(
           id: movie['id'],
           overview: movie['overview'],
+          mediaType: 'movie',
           title: movie['original_title'],
           backdropPath: movie['backdrop_path'],
           orginalLanguage: movie['original_language'],
@@ -73,6 +101,14 @@ class MovieProvider with ChangeNotifier {
     });
   }
 
+  void _setGenres() {
+    var genresList = [];
+    for (var i = 0; i < movieInfo.genres.length; i++) {
+      genresList.add(movieInfo.genres[i]['name']);
+    }
+    _genres = genresList.join(', ');
+  }
+
   void _getMovieDetails(int id) async {
     var responseData = await TmdbApi.getMovie(id);
     _movieInfo.id = responseData['id'];
@@ -94,6 +130,7 @@ class MovieProvider with ChangeNotifier {
         Movie(
           id: movie['id'],
           overview: movie['overview'],
+          mediaType: 'movie',
           title: movie['original_title'],
           backdropPath: movie['backdrop_path'],
           orginalLanguage: movie['original_language'],
@@ -101,22 +138,6 @@ class MovieProvider with ChangeNotifier {
         ),
       );
     });
-    notifyListeners();
-  }
-
-  void getMovieInfo(int id) async {
-    _cast = [];
-    _crew = [];
-    _director = '';
-    _writers = '';
-    _movieInfo = MovieInfo();
-    _recommendations = [];
-    var responseData = await TmdbApi.getMovieCredits(id);
-    _addCast(responseData);
-    _getMovieDetails(id);
-    _getRecommendations(id);
-    _director = DataHelper.setDirector(crew);
-    _writers = DataHelper.setWriters(crew);
     notifyListeners();
   }
 }

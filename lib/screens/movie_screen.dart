@@ -37,29 +37,32 @@ class _MovieScreenState extends State<MovieScreen> {
             Stack(
               alignment: Alignment.center,
               children: [
-                Container(
-                  width: double.infinity,
-                  height: 400,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(
-                        widget.movie.posterPath == '' ||
-                                widget.movie.posterPath == null
-                            ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
-                            : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
+                Hero(
+                  tag: widget.movie.id,
+                  child: Container(
+                    width: double.infinity,
+                    height: 400,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                          widget.movie.posterPath == '' ||
+                                  widget.movie.posterPath == null
+                              ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
+                              : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
+                        ),
                       ),
                     ),
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.transparent,
-                          kPrimaryColor,
-                        ],
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            kPrimaryColor,
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -157,7 +160,9 @@ class _MovieScreenState extends State<MovieScreen> {
             ),
             InformationText(
               text: 'Language : ',
-              subText: movie.orginalLanguage == 'en' ? 'English' : '',
+              subText: movie.orginalLanguage == 'en'
+                  ? 'English'
+                  : movie.orginalLanguage,
             ),
             TitleText(title: 'Recommendations'),
             RecommendationsList()

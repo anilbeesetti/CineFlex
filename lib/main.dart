@@ -1,5 +1,7 @@
 import 'package:cineflex/constansts.dart';
+import 'package:cineflex/providers/data_provider.dart';
 import 'package:cineflex/providers/movie_provider.dart';
+import 'package:cineflex/providers/tvshow_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
@@ -11,7 +13,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<MovieProvider>(create: (_) => MovieProvider())
+        ChangeNotifierProvider<MovieProvider>(create: (_) => MovieProvider()),
+        ChangeNotifierProvider<TvShowProvider>(create: (_) => TvShowProvider()),
+        ChangeNotifierProvider<DataProvider>(create: (_) => DataProvider())
       ],
       child: MaterialApp(
         theme: ThemeData.dark().copyWith(

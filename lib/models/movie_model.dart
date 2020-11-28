@@ -4,6 +4,7 @@ class Movie {
   final int id;
   final String title;
   final String overview;
+  final String mediaType;
   final String posterPath;
   final String backdropPath;
   final String orginalLanguage;
@@ -12,6 +13,7 @@ class Movie {
     @required this.id,
     @required this.title,
     @required this.overview,
+    @required this.mediaType,
     @required this.posterPath,
     @required this.backdropPath,
     @required this.orginalLanguage,
