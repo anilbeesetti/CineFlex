@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cineflex/screens/movie_screen.dart';
 import 'package:cineflex/screens/tv_show_screen.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +43,7 @@ class _PageViewWidgetState extends State<PageViewWidget> {
       child: PageView.builder(
         physics: ClampingScrollPhysics(),
         controller: _pageController,
-        itemCount: widget.collection.length,
+        itemCount: min(20, widget.collection.length),
         itemBuilder: (context, index) {
           var media = widget.collection;
           final distortionRatio =

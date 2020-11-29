@@ -13,7 +13,6 @@ class TvShowsTabScreen extends StatefulWidget {
 class _TvShowsTabScreenState extends State<TvShowsTabScreen> {
   @override
   void initState() {
-    context.read<TvShowProvider>().getPopularTvShows();
     super.initState();
   }
 

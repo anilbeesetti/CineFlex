@@ -20,10 +20,18 @@ class MovieScreen extends StatefulWidget {
 }
 
 class _MovieScreenState extends State<MovieScreen> {
+  bool isLoading = true;
   @override
   void initState() {
-    context.read<MovieProvider>().getMovieInfo(widget.movie.id);
     super.initState();
+    getMovieInfo();
+  }
+
+  void getMovieInfo() async {
+    await context.read<MovieProvider>().getMovieInfo(widget.movie.id);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -31,143 +39,153 @@ class _MovieScreenState extends State<MovieScreen> {
     var movie = context.watch<MovieProvider>().movieInfo;
     return Scaffold(
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Hero(
-                  tag: widget.movie.id,
-                  child: Container(
-                    width: double.infinity,
-                    height: 400,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                          widget.movie.posterPath == '' ||
-                                  widget.movie.posterPath == null
-                              ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
-                              : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
-                        ),
-                      ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            kPrimaryColor,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 55,
-                  child: Container(
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Stack(
                     alignment: Alignment.center,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Text(
-                      widget.movie.title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 20,
-                  bottom: 5,
-                  child: CircleAvatar(
-                    radius: 25,
-                    backgroundColor: kAccentColor,
-                    child: Icon(
-                      Icons.play_arrow_rounded,
-                      size: 40,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
-              ],
-            ),
-            TitleText(
-              title: 'The Plot',
-              padding: EdgeInsets.only(right: 20, bottom: 10, left: 20, top: 5),
-            ),
-            Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-              child: Text(
-                widget.movie.overview,
-                maxLines: 3,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.blueGrey[500],
-                ),
-              ),
-            ),
-            InformationText(
-              text: 'Director : ',
-              subText: context.watch<MovieProvider>().director,
-            ),
-            InformationText(
-              text: 'Writers : ',
-              subText: context.watch<MovieProvider>().writers,
-            ),
-            TitleText(
-              title: 'The Cast',
-            ),
-            Container(
-              height: 200,
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                scrollDirection: Axis.horizontal,
-                itemCount:
-                    min(9, context.watch<MovieProvider>().cast.length + 1),
-                itemBuilder: (context, index) {
-                  var itemcount =
-                      min(9, context.watch<MovieProvider>().cast.length + 1);
-                  var cast = context.watch<MovieProvider>().cast;
-                  if (index == itemcount - 1) {
-                    return Container(
-                      alignment: Alignment.center,
-                      child: FlatButton(
-                        child: Text(
-                          'View More',
-                          style: TextStyle(fontSize: 18, color: kAccentColor),
+                    children: [
+                      Hero(
+                        tag: widget.movie.id,
+                        child: Container(
+                          width: double.infinity,
+                          height: 400,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: NetworkImage(
+                                widget.movie.posterPath == '' ||
+                                        widget.movie.posterPath == null
+                                    ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
+                                    : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
+                              ),
+                            ),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  kPrimaryColor,
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                        onPressed: () {},
                       ),
-                    );
-                  }
-                  return CastCard(
-                    cast: cast[index],
-                  );
-                },
+                      Positioned(
+                        bottom: 55,
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Text(
+                            widget.movie.title,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 25),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 20,
+                        bottom: 5,
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundColor: kAccentColor,
+                          child: Icon(
+                            Icons.play_arrow_rounded,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  TitleText(
+                    title: 'The Plot',
+                    padding: EdgeInsets.only(
+                        right: 20, bottom: 10, left: 20, top: 5),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                    child: Text(
+                      widget.movie.overview,
+                      maxLines: 3,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.blueGrey[500],
+                      ),
+                    ),
+                  ),
+                  InformationText(
+                    text: 'Director : ',
+                    subText: context.watch<MovieProvider>().director,
+                  ),
+                  InformationText(
+                    text: 'Writers : ',
+                    subText: context.watch<MovieProvider>().writers,
+                  ),
+                  context.watch<MovieProvider>().cast.length != 0
+                      ? TitleText(
+                          title: 'The Cast',
+                        )
+                      : SizedBox.shrink(),
+                  context.watch<MovieProvider>().cast.length != 0
+                      ? Container(
+                          height: 200,
+                          child: ListView.builder(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: min(9,
+                                context.watch<MovieProvider>().cast.length + 1),
+                            itemBuilder: (context, index) {
+                              var itemcount = min(
+                                  9,
+                                  context.watch<MovieProvider>().cast.length +
+                                      1);
+                              var cast = context.watch<MovieProvider>().cast;
+                              if (index == itemcount - 1) {
+                                return Container(
+                                  alignment: Alignment.center,
+                                  child: FlatButton(
+                                    child: Text(
+                                      'View More',
+                                      style: TextStyle(
+                                          fontSize: 18, color: kAccentColor),
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                );
+                              }
+                              return CastCard(
+                                cast: cast[index],
+                              );
+                            },
+                          ),
+                        )
+                      : SizedBox.shrink(),
+                  TitleText(title: 'More Details'),
+                  InformationText(
+                    text: 'Genres : ',
+                    subText: context.watch<MovieProvider>().genres,
+                  ),
+                  InformationText(
+                    text: 'Release Date : ',
+                    subText: movie.releaseDate,
+                  ),
+                  InformationText(
+                    text: 'Language : ',
+                    subText: movie.orginalLanguage == 'en'
+                        ? 'English'
+                        : movie.orginalLanguage,
+                  ),
+                  TitleText(title: 'Recommendations'),
+                  RecommendationsList()
+                ],
               ),
-            ),
-            TitleText(title: 'More Details'),
-            InformationText(
-              text: 'Genres : ',
-              subText: context.watch<MovieProvider>().genres,
-            ),
-            InformationText(
-              text: 'Release Date : ',
-              subText: movie.releaseDate,
-            ),
-            InformationText(
-              text: 'Language : ',
-              subText: movie.orginalLanguage == 'en'
-                  ? 'English'
-                  : movie.orginalLanguage,
-            ),
-            TitleText(title: 'Recommendations'),
-            RecommendationsList()
-          ],
-        ),
       ),
     );
   }

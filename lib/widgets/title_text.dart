@@ -4,7 +4,7 @@ class TitleText extends StatelessWidget {
   const TitleText({
     Key key,
     @required this.title,
-    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
   }) : super(key: key);
 
   final String title;

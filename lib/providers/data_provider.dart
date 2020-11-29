@@ -9,8 +9,12 @@ class DataProvider with ChangeNotifier {
 
   List<Movie> get getTrending => _trending;
 
-  void getTrendingMedia() async {
-    var responseData = await TmdbApi.getTrending();
+  void resetTrending() {
+    _trending = [];
+  }
+
+  Future<void> getTrendingMedia() async {
+    var responseData = await TmdbApi.getData(Datatype.trending, 'all');
     _addMedia(responseData);
   }
 

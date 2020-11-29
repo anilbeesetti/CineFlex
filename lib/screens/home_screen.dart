@@ -4,10 +4,10 @@ import 'package:cineflex/providers/movie_provider.dart';
 import 'package:cineflex/providers/tvshow_provider.dart';
 import 'package:cineflex/widgets/bottom_nav_bar.dart';
 import 'package:cineflex/widgets/home_app_bar.dart';
+import 'package:provider/provider.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'hometabs/home_tab_screen.dart';
 import 'hometabs/movies_tab_screen.dart';
@@ -20,15 +20,37 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  bool isLoading = true;
   MenuTab selectedTab = MenuTab.Home;
   NavigationTab selectedNavigationTab = NavigationTab.Home;
 
   @override
   void initState() {
-    context.read<DataProvider>().getTrendingMedia();
-    context.read<MovieProvider>().gettopRatedMovies();
-    context.read<TvShowProvider>().getTopRatedTvShows();
     super.initState();
+    loadData();
+  }
+
+  void loadData() async {
+    var dataProvider = context.read<DataProvider>();
+    var movieProvider = context.read<MovieProvider>();
+    var tvShowProvider = context.read<TvShowProvider>();
+
+    dataProvider.resetTrending();
+    movieProvider.resetTopRatedMovies();
+    tvShowProvider.resetTopRatedTvShows();
+    movieProvider.resetPopularMovies();
+    movieProvider.resetNowPlayingMovies();
+
+    await dataProvider.getTrendingMedia();
+    await movieProvider.getPopularMovies();
+    await tvShowProvider.getPopularTvShows();
+    await movieProvider.getUpcomingMovies();
+    movieProvider.getNowPlayingMovies();
+    movieProvider.gettopRatedMovies();
+    tvShowProvider.getTopRatedTvShows();
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void selectTab(MenuTab tab) {
@@ -65,7 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             SliverToBoxAdapter(
-              child: tabScreen(),
+              child: isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : tabScreen(),
             ),
           ],
         ),

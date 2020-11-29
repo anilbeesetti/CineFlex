@@ -10,8 +10,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class HomeTabScreen extends StatelessWidget {
-  void loadMovies(BuildContext context, page) {
-    context.read<MovieProvider>().gettopRatedMovies(page: page);
+  void loadUpcomingMovies(BuildContext context, page) {
+    context.read<MovieProvider>().getUpcomingMovies(page: page);
+  }
+
+  void loadPopularMovies(BuildContext context, page) {
+    context.read<MovieProvider>().getPopularMovies(page: page);
+  }
+
+  void loadTopRatedTvShows(BuildContext context, page) {
+    context.read<TvShowProvider>().getTopRatedTvShows(page: page);
   }
 
   Widget build(BuildContext context) {
@@ -27,24 +35,72 @@ class HomeTabScreen extends StatelessWidget {
               context,
               CupertinoPageRoute(
                 builder: (context) => CollectionScreen(
-                  title: 'Top Rated Movies',
-                  onLoad: loadMovies,
-                  media: context.watch<MovieProvider>().topRatedMovies,
+                  title: 'Upcoming Movies',
+                  onLoad: loadUpcomingMovies,
+                  media: context.watch<MovieProvider>().upcomingMovies,
                 ),
               ),
             );
           },
-          title: 'Top Movies',
+          title: 'Upcoming Movies',
         ),
         MovieListView(
-          media: context.watch<MovieProvider>().topRatedMovies,
+          media: context.watch<MovieProvider>().upcomingMovies,
         ),
         CollectionHead(
+          onPress: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => CollectionScreen(
+                  title: 'Popular Movies',
+                  onLoad: loadPopularMovies,
+                  media: context.watch<MovieProvider>().popularMovies,
+                ),
+              ),
+            );
+          },
+          title: 'Popular Movies',
+        ),
+        MovieListView(
+          media: context.watch<MovieProvider>().popularMovies,
+        ),
+        CollectionHead(
+          onPress: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => CollectionScreen(
+                  title: 'Top Rated Tv Shows',
+                  onLoad: loadTopRatedTvShows,
+                  media: context.watch<TvShowProvider>().topRatedTvShows,
+                ),
+              ),
+            );
+          },
           title: 'Top Tv Shows',
         ),
         MovieListView(
           media: context.watch<TvShowProvider>().topRatedTvShows,
-        )
+        ),
+        CollectionHead(
+          onPress: () {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => CollectionScreen(
+                  title: 'Popular Tv Shows',
+                  onLoad: loadTopRatedTvShows,
+                  media: context.watch<TvShowProvider>().popularTvShows,
+                ),
+              ),
+            );
+          },
+          title: 'Popular Tv Shows',
+        ),
+        MovieListView(
+          media: context.watch<TvShowProvider>().popularTvShows,
+        ),
       ],
     );
   }

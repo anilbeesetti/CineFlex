@@ -11,10 +11,9 @@ class MoviesTabScreen extends StatefulWidget {
 }
 
 class _MoviesTabScreenState extends State<MoviesTabScreen> {
+  bool isLoading = true;
   @override
   void initState() {
-    context.read<MovieProvider>().getPopularMovies();
-    context.read<MovieProvider>().getNowPlayingMovies();
     super.initState();
   }
 

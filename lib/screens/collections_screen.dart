@@ -53,18 +53,19 @@ class _CollectionScreenState extends State<CollectionScreen> {
       ),
       body: GridView.builder(
         controller: _scrollController,
-        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+        padding: EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
         itemCount: widget.media.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           crossAxisSpacing: 0,
-          mainAxisSpacing: 10,
+          mainAxisSpacing: 15,
           childAspectRatio: 0.7,
         ),
         itemBuilder: (context, index) {
           isLoading = false;
           return Container(
-            height: 180,
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(8)),
             margin: EdgeInsets.only(right: 15),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),

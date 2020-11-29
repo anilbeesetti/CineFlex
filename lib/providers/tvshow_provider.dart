@@ -19,13 +19,27 @@ class TvShowProvider with ChangeNotifier {
   List<TvShow> get recommendations => _recommendations;
   TvShowInfo get tvShowInfo => _tvShowInfo;
 
-  void getPopularTvShows() async {
-    var responseData = await TmdbApi.getPopularTvShows();
+  void resetPopularTvShows() {
+    _popularTvShows = [];
+  }
+
+  void resetTopRatedTvShows() {
+    _topRatedTvShows = [];
+  }
+
+  void reset() {
+    _popularTvShows = [];
+  }
+
+  Future<void> getPopularTvShows({int page}) async {
+    var responseData =
+        await TmdbApi.getData(Datatype.popular, 'tv', page: page);
     _addTvShow(responseData, _popularTvShows);
   }
 
-  void getTopRatedTvShows() async {
-    var responseData = await TmdbApi.getTopRated('tv');
+  Future<void> getTopRatedTvShows({int page}) async {
+    var responseData =
+        await TmdbApi.getData(Datatype.topRated, 'tv', page: page);
     _addTvShow(responseData, _topRatedTvShows);
   }
 

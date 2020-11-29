@@ -46,6 +46,10 @@ class MovieListView extends StatelessWidget {
             child: Hero(
               tag: media[index].id,
               child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[400],
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 margin: EdgeInsets.only(right: 15),
                 height: 160,
                 child: ClipRRect(
