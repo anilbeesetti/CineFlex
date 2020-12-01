@@ -18,6 +18,10 @@ class HomeTabScreen extends StatelessWidget {
     context.read<MovieProvider>().getPopularMovies(page: page);
   }
 
+  void loadPopularTvShows(BuildContext context, page) {
+    context.read<TvShowProvider>().getPopularTvShows(page: page);
+  }
+
   void loadTopRatedTvShows(BuildContext context, page) {
     context.read<TvShowProvider>().getTopRatedTvShows(page: page);
   }

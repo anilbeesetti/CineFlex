@@ -1,4 +1,3 @@
-import 'package:cineflex/helpers/data_helper.dart';
 import 'package:cineflex/helpers/tmdb_api.dart';
 import 'package:cineflex/models/cast_model.dart';
 import 'package:cineflex/models/movie_model.dart';
@@ -10,83 +9,62 @@ class MovieProvider with ChangeNotifier {
   List<Movie> _topRatedMovies = [];
   List<Movie> _nowPlayingMovies = [];
   List<Movie> _upcomingMovies = [];
-  List<Cast> _cast = [];
-  List<Crew> _crew = [];
-  List<Movie> _recommendations = [];
-  String _director = '';
-  String _writers = '';
-  String _genres = '';
-  MovieInfo _movieInfo = MovieInfo();
+  List<Movie> _trendingMovies = [];
 
   // Getter Methods
-  String get director => _director;
-  String get writers => _writers;
-  String get genres => _genres;
+
+  List<Movie> get trendingMovies => _trendingMovies;
   List<Movie> get popularMovies => _popularMovies;
   List<Movie> get topRatedMovies => _topRatedMovies;
   List<Movie> get nowPlayingMovies => _nowPlayingMovies;
   List<Movie> get upcomingMovies => _upcomingMovies;
-  List<Cast> get cast => _cast;
-  List<Crew> get crew => _crew;
-  List<Movie> get recommendations => _recommendations;
-  MovieInfo get movieInfo => _movieInfo;
-
-  // Reset Data Methods
-  void resetPopularMovies() {
-    _popularMovies = [];
-  }
-
-  void resetTopRatedMovies() {
-    _popularMovies = [];
-  }
-
-  void resetNowPlayingMovies() {
-    _popularMovies = [];
-  }
-
-  void resetUpcomingMovies() {
-    _upcomingMovies = [];
-  }
 
   // Data get Methods
+  Future<void> getTrendingMovies({int page}) async {
+    var responseData = await TmdbApi.getData(DataType.trending, 'movie',
+        page: page, timePeriod: 'week');
+    _addMovies(responseData, _trendingMovies);
+  }
+
   Future<void> getPopularMovies({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.popular, 'movie', page: page);
+        await TmdbApi.getData(DataType.popular, 'movie', page: page);
     _addMovies(responseData, _popularMovies);
   }
 
   Future<void> gettopRatedMovies({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.topRated, 'movie', page: page);
+        await TmdbApi.getData(DataType.topRated, 'movie', page: page);
     _addMovies(responseData, _topRatedMovies);
   }
 
   Future<void> getNowPlayingMovies({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.nowPlaying, 'movie', page: page);
+        await TmdbApi.getData(DataType.nowPlaying, 'movie', page: page);
     _addMovies(responseData, _nowPlayingMovies);
   }
 
   Future<void> getUpcomingMovies({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.upcoming, 'movie', page: page);
+        await TmdbApi.getData(DataType.upcoming, 'movie', page: page);
     _addMovies(responseData, _upcomingMovies);
   }
 
-  Future<void> getMovieInfo(int id) async {
-    _cast = [];
-    _crew = [];
-    _director = '';
-    _writers = '';
-    _movieInfo = MovieInfo();
-    _recommendations = [];
-    var responseData = await TmdbApi.getMovieCredits(id);
-    _addCast(responseData);
-    _getMovieDetails(id);
-    _getRecommendations(id);
-    _director = DataHelper.setDirector(crew);
-    _writers = DataHelper.setWriters(crew);
+  Future<void> getMovieInfo(
+    int id,
+    List mediaList,
+    List<Cast> castList,
+    List<Crew> crewList,
+  ) async {
+    await _getMovieCredits(id, castList, crewList);
+    await _getRecommendations(id, mediaList);
     notifyListeners();
+  }
+
+  Future<void> _getMovieCredits(
+      int id, List<Cast> castList, List<Crew> crewList) async {
+    var responseData = await TmdbApi.getCredits(id, 'movie');
+    _addCast(responseData, castList, crewList);
   }
 
   // Helper Medthods
@@ -107,9 +85,9 @@ class MovieProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void _addCast(responseData) {
+  void _addCast(responseData, List<Cast> castList, List<Crew> crewList) {
     responseData['cast'].forEach((cast) {
-      _cast.add(Cast(
+      castList.add(Cast(
           id: cast['id'],
           name: cast['name'],
           characterName: cast['character'],
@@ -117,7 +95,7 @@ class MovieProvider with ChangeNotifier {
           profilePath: cast['profile_path']));
     });
     responseData['crew'].forEach((crew) {
-      _crew.add(Crew(
+      crewList.add(Crew(
         id: crew['id'],
         name: crew['name'],
         profilePath: crew['profile_path'],
@@ -128,43 +106,28 @@ class MovieProvider with ChangeNotifier {
     });
   }
 
-  void _setGenres() {
+  String setGenres(List genresDataList) {
     var genresList = [];
-    for (var i = 0; i < movieInfo.genres.length; i++) {
-      genresList.add(movieInfo.genres[i]['name']);
+    for (var i = 0; i < genresDataList.length; i++) {
+      genresList.add(genresDataList[i]['name']);
     }
-    _genres = genresList.join(', ');
+    return genresList.join(', ');
   }
 
-  void _getMovieDetails(int id) async {
-    var responseData = await TmdbApi.getMovie(id);
-    _movieInfo.id = responseData['id'];
-    _movieInfo.backdropPath = responseData['backdrop_path'];
-    _movieInfo.orginalLanguage = responseData['original_language'];
-    _movieInfo.genres = responseData['genres'];
-    _movieInfo.posterPath = responseData['poster_path'];
-    _movieInfo.title = responseData['original_title'];
-    _movieInfo.releaseDate = responseData['release_date'];
-    _movieInfo.overview = responseData['overview'];
-    _setGenres();
-    notifyListeners();
+  Future<MovieInfo> getMovieDetails(int id) async {
+    var responseData = await TmdbApi.getMediaData(id, 'movie');
+    return MovieInfo(
+      id: responseData['id'],
+      orginalLanguage: responseData['original_language'],
+      genres: responseData['genres'],
+      title: responseData['original_title'],
+      releaseDate: responseData['release_date'],
+    );
   }
 
-  void _getRecommendations(int id) async {
-    var responseData = await TmdbApi.getRecommendations(id);
-    responseData['results'].forEach((movie) {
-      _recommendations.add(
-        Movie(
-          id: movie['id'],
-          overview: movie['overview'],
-          mediaType: 'movie',
-          title: movie['original_title'],
-          backdropPath: movie['backdrop_path'],
-          orginalLanguage: movie['original_language'],
-          posterPath: movie['poster_path'],
-        ),
-      );
-    });
+  Future<void> _getRecommendations(int id, List mediaList) async {
+    var responseData = await TmdbApi.getRecommendations(id, 'movie');
+    _addMovies(responseData, mediaList);
     notifyListeners();
   }
 }

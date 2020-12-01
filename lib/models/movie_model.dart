@@ -23,9 +23,6 @@ class Movie {
 class MovieInfo {
   int id;
   String title;
-  String posterPath;
-  String backdropPath;
-  String overview;
   String orginalLanguage;
   List genres;
   String releaseDate;
@@ -33,9 +30,6 @@ class MovieInfo {
   MovieInfo({
     this.id = 0,
     this.title = '',
-    this.posterPath = '',
-    this.overview = '',
-    this.backdropPath = '',
     this.orginalLanguage = '',
     this.genres = const [],
     this.releaseDate = '',

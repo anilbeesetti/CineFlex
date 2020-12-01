@@ -22,14 +22,26 @@ class _TvShowsTabScreenState extends State<TvShowsTabScreen> {
       children: [
         PageViewWidget(
           height: 180,
-          collection: context.watch<TvShowProvider>().popularTvShows,
+          collection: context.watch<TvShowProvider>().trendingTvShows,
+        ),
+        CollectionHead(
+          title: 'On the Air',
+        ),
+        MovieListView(
+          media: context.watch<TvShowProvider>().onTheAirTvShows,
+        ),
+        CollectionHead(
+          title: 'Popular',
+        ),
+        MovieListView(
+          media: context.watch<TvShowProvider>().popularTvShows,
         ),
         CollectionHead(
           title: 'Top Tv Shows',
         ),
         MovieListView(
           media: context.watch<TvShowProvider>().topRatedTvShows,
-        )
+        ),
       ],
     );
   }

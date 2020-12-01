@@ -57,16 +57,16 @@ class _CollectionScreenState extends State<CollectionScreen> {
         itemCount: widget.media.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
-          crossAxisSpacing: 0,
-          mainAxisSpacing: 15,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
           childAspectRatio: 0.7,
         ),
         itemBuilder: (context, index) {
           isLoading = false;
           return Container(
             decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(8)),
-            margin: EdgeInsets.only(right: 15),
+                color: Colors.blueGrey[600],
+                borderRadius: BorderRadius.circular(8)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(

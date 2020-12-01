@@ -1,10 +1,12 @@
-import 'dart:math';
-
-import 'package:cineflex/constansts.dart';
+import 'package:cineflex/helpers/data_helper.dart';
+import 'package:cineflex/models/cast_model.dart';
 import 'package:cineflex/models/movie_model.dart';
 import 'package:cineflex/providers/movie_provider.dart';
-import 'package:cineflex/widgets/cast_card.dart';
+
+import 'package:cineflex/widgets/cast_list.dart';
 import 'package:cineflex/widgets/information_text.dart';
+import 'package:cineflex/widgets/poster_info.dart';
+import 'package:cineflex/widgets/recommendations_list.dart';
 import 'package:cineflex/widgets/title_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,14 @@ class MovieScreen extends StatefulWidget {
 
 class _MovieScreenState extends State<MovieScreen> {
   bool isLoading = true;
+  List<Cast> cast = [];
+  List<Crew> crew = [];
+  List recommendations = [];
+  String director = '';
+  String writers = '';
+  MovieInfo movieInfo;
+  String genres = '';
+
   @override
   void initState() {
     super.initState();
@@ -28,7 +38,13 @@ class _MovieScreenState extends State<MovieScreen> {
   }
 
   void getMovieInfo() async {
-    await context.read<MovieProvider>().getMovieInfo(widget.movie.id);
+    var movieProvider = context.read<MovieProvider>();
+    await movieProvider.getMovieInfo(
+        widget.movie.id, recommendations, cast, crew);
+    movieInfo = await movieProvider.getMovieDetails(widget.movie.id);
+    genres = movieProvider.setGenres(movieInfo.genres);
+    director = DataHelper.setDirector(crew);
+    writers = DataHelper.setWriters(crew);
     setState(() {
       isLoading = false;
     });
@@ -36,73 +52,22 @@ class _MovieScreenState extends State<MovieScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var movie = context.watch<MovieProvider>().movieInfo;
+    var movie = movieInfo;
     return Scaffold(
       body: SingleChildScrollView(
         child: isLoading
-            ? CircularProgressIndicator()
+            ? Container(
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Hero(
-                        tag: widget.movie.id,
-                        child: Container(
-                          width: double.infinity,
-                          height: 400,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(
-                                widget.movie.posterPath == '' ||
-                                        widget.movie.posterPath == null
-                                    ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
-                                    : 'https://image.tmdb.org/t/p/w780/${widget.movie.posterPath}',
-                              ),
-                            ),
-                          ),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  kPrimaryColor,
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 55,
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: Text(
-                            widget.movie.title,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 25),
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        right: 20,
-                        bottom: 5,
-                        child: CircleAvatar(
-                          radius: 25,
-                          backgroundColor: kAccentColor,
-                          child: Icon(
-                            Icons.play_arrow_rounded,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                        ),
-                      )
-                    ],
+                  PosterInfo(
+                    title: widget.movie.title,
+                    posterPath: widget.movie.posterPath,
                   ),
                   TitleText(
                     title: 'The Plot',
@@ -122,55 +87,27 @@ class _MovieScreenState extends State<MovieScreen> {
                   ),
                   InformationText(
                     text: 'Director : ',
-                    subText: context.watch<MovieProvider>().director,
+                    subText: director,
                   ),
                   InformationText(
                     text: 'Writers : ',
-                    subText: context.watch<MovieProvider>().writers,
+                    subText: writers,
                   ),
-                  context.watch<MovieProvider>().cast.length != 0
+                  cast.length != 0
                       ? TitleText(
                           title: 'The Cast',
                         )
                       : SizedBox.shrink(),
-                  context.watch<MovieProvider>().cast.length != 0
-                      ? Container(
-                          height: 200,
-                          child: ListView.builder(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: min(9,
-                                context.watch<MovieProvider>().cast.length + 1),
-                            itemBuilder: (context, index) {
-                              var itemcount = min(
-                                  9,
-                                  context.watch<MovieProvider>().cast.length +
-                                      1);
-                              var cast = context.watch<MovieProvider>().cast;
-                              if (index == itemcount - 1) {
-                                return Container(
-                                  alignment: Alignment.center,
-                                  child: FlatButton(
-                                    child: Text(
-                                      'View More',
-                                      style: TextStyle(
-                                          fontSize: 18, color: kAccentColor),
-                                    ),
-                                    onPressed: () {},
-                                  ),
-                                );
-                              }
-                              return CastCard(
-                                cast: cast[index],
-                              );
-                            },
-                          ),
-                        )
-                      : SizedBox.shrink(),
+                  CastList(
+                    cast: cast,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   TitleText(title: 'More Details'),
                   InformationText(
                     text: 'Genres : ',
-                    subText: context.watch<MovieProvider>().genres,
+                    subText: genres,
                   ),
                   InformationText(
                     text: 'Release Date : ',
@@ -183,72 +120,11 @@ class _MovieScreenState extends State<MovieScreen> {
                         : movie.orginalLanguage,
                   ),
                   TitleText(title: 'Recommendations'),
-                  RecommendationsList()
+                  RecommendationsList(
+                    recommendations: recommendations,
+                  )
                 ],
               ),
-      ),
-    );
-  }
-}
-
-class RecommendationsList extends StatelessWidget {
-  const RecommendationsList({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 180,
-      child: ListView.builder(
-        padding: EdgeInsets.only(left: 20),
-        scrollDirection: Axis.horizontal,
-        itemCount: context.watch<MovieProvider>().recommendations.length,
-        itemBuilder: (context, index) {
-          var recommendations = context.watch<MovieProvider>().recommendations;
-          return GestureDetector(
-            onTap: () {
-              Navigator.pushReplacement(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => MovieScreen(
-                      movie: recommendations[index],
-                    ),
-                  ));
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 150,
-                  margin: EdgeInsets.only(right: 20, bottom: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      recommendations[index].backdropPath == null
-                          ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
-                          : 'https://image.tmdb.org/t/p/w500/${recommendations[index].backdropPath}',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 250,
-                  child: Text(
-                    recommendations[index].title,
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
       ),
     );
   }

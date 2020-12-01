@@ -1,23 +1,22 @@
 import 'package:cineflex/helpers/tmdb_api.dart';
+import 'package:cineflex/models/cast_model.dart';
 import 'package:cineflex/models/tvshow_model.dart';
 import 'package:flutter/foundation.dart';
 
 class TvShowProvider with ChangeNotifier {
   List<TvShow> _popularTvShows = [];
   List<TvShow> _topRatedTvShows = [];
-  List<TvShow> _recommendations = [];
-  String _director = '';
-  String _writers = '';
-  String _genres = '';
-  TvShowInfo _tvShowInfo = TvShowInfo();
+  List<TvShow> _trendingTvShows = [];
+  List<TvShow> _onTheAirTvShows = [];
 
-  String get director => _director;
-  String get writers => _writers;
-  String get genres => _genres;
+  List<Season> _seasonList;
+
+  List<TvShow> get trendingTvShows => _trendingTvShows;
   List<TvShow> get popularTvShows => _popularTvShows;
   List<TvShow> get topRatedTvShows => _topRatedTvShows;
-  List<TvShow> get recommendations => _recommendations;
-  TvShowInfo get tvShowInfo => _tvShowInfo;
+  List<TvShow> get onTheAirTvShows => _onTheAirTvShows;
+
+  List<Season> get seasonList => _seasonList;
 
   void resetPopularTvShows() {
     _popularTvShows = [];
@@ -27,20 +26,129 @@ class TvShowProvider with ChangeNotifier {
     _topRatedTvShows = [];
   }
 
-  void reset() {
-    _popularTvShows = [];
+  void resetTrendingTvShows() {
+    _trendingTvShows = [];
+  }
+
+  void resetOntheAirTvShows() {
+    _onTheAirTvShows = [];
+  }
+
+  Future<void> getTrendingTvShows({int page}) async {
+    var responseData = await TmdbApi.getData(DataType.trending, 'tv');
+    _addTvShow(responseData, _trendingTvShows);
   }
 
   Future<void> getPopularTvShows({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.popular, 'tv', page: page);
+        await TmdbApi.getData(DataType.popular, 'tv', page: page);
     _addTvShow(responseData, _popularTvShows);
   }
 
   Future<void> getTopRatedTvShows({int page}) async {
     var responseData =
-        await TmdbApi.getData(Datatype.topRated, 'tv', page: page);
+        await TmdbApi.getData(DataType.topRated, 'tv', page: page);
     _addTvShow(responseData, _topRatedTvShows);
+  }
+
+  Future<void> getOnTheAirTvShows({int page}) async {
+    var responseData =
+        await TmdbApi.getData(DataType.onTheAir, 'tv', page: page);
+    _addTvShow(responseData, _onTheAirTvShows);
+  }
+
+  Future<TvShowInfo> getTvShowDetails(int id) async {
+    var responseData = await TmdbApi.getMediaData(id, 'tv');
+    return TvShowInfo(
+      id: responseData['id'],
+      backdropPath: responseData['backdrop_path'],
+      orginalLanguage: responseData['original_language'],
+      genres: responseData['genres'],
+      posterPath: responseData['poster_path'],
+      title: responseData['original_name'],
+      overview: responseData['overview'],
+      seasons: responseData['seasons'],
+    );
+    // await getSeasonInfo(id, 1);
+    // await _getRecommendations(id);
+    // _director = DataHelper.setDirector(crew);
+    // _writers = DataHelper.setWriters(crew);
+    // notifyListeners();
+  }
+
+  Future<void> getSeasonInfo(
+      int tvId, int seasonNumber, List episodeList) async {
+    await _getEpisodes(tvId, seasonNumber, episodeList);
+    notifyListeners();
+  }
+
+  Future<void> _getEpisodes(
+      int tvId, int seasonNumber, List episodeList) async {
+    var responseData = await TmdbApi.getSeasonInfo(tvId, seasonNumber);
+    responseData['episodes'].forEach((episode) {
+      episodeList.add(
+        Episode(
+          id: episode['id'],
+          title: episode['name'],
+          airDate: episode['air_date'],
+          overview: episode['overview'],
+          stillPath: episode['still_path'],
+          episodeNumber: episode['episode_number'],
+        ),
+      );
+    });
+  }
+
+  Future<void> getTvShowCredits(
+    int id,
+    List<Cast> castList,
+    List<Crew> crewList,
+  ) async {
+    var responseData = await TmdbApi.getCredits(id, 'tv');
+    _addCast(responseData, castList, crewList);
+  }
+
+  void _addCast(responseData, List<Cast> castList, List<Crew> crewList) {
+    responseData['cast'].forEach((cast) {
+      castList.add(Cast(
+          id: cast['id'],
+          name: cast['name'],
+          characterName: cast['character'],
+          creditId: cast['credit_id'],
+          profilePath: cast['profile_path']));
+    });
+    responseData['crew'].forEach((crew) {
+      crewList.add(Crew(
+        id: crew['id'],
+        name: crew['name'],
+        profilePath: crew['profile_path'],
+        department: crew['department'],
+        creditId: crew['credit_id'],
+        job: crew['job'],
+      ));
+    });
+  }
+
+  // Future<void> getTvShowInfo(int id, List mediaList, List<Cast> castList, List<Crew> crewList) async {
+  //   await _getTvShowCredits(tvId, seasonNumber)
+  //   notifyListeners();
+  // }
+
+  // Future<void> getMovieInfo(
+  //   int id,
+  //   List mediaList,
+  //   List<Cast> castList,
+  //   List<Crew> crewList,
+  // ) async {
+  //   await _getMovieCredits(id, castList, crewList);
+  //   await _getRecommendations(id, mediaList);
+  //   notifyListeners();
+  // }
+
+  Future<void> getRecommendations(int id, List mediaList) async {
+    var responseData = await TmdbApi.getRecommendations(id, 'tv');
+    _addTvShow(responseData, mediaList);
+    notifyListeners();
   }
 
   void _addTvShow(responseData, List mediaList) {

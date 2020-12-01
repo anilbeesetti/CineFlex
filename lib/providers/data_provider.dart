@@ -14,7 +14,7 @@ class DataProvider with ChangeNotifier {
   }
 
   Future<void> getTrendingMedia() async {
-    var responseData = await TmdbApi.getData(Datatype.trending, 'all');
+    var responseData = await TmdbApi.getData(DataType.trending, 'all');
     _addMedia(responseData);
   }
 

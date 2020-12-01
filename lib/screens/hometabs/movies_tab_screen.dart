@@ -23,13 +23,25 @@ class _MoviesTabScreenState extends State<MoviesTabScreen> {
       children: [
         PageViewWidget(
           height: 180,
-          collection: context.watch<MovieProvider>().popularMovies,
+          collection: context.watch<MovieProvider>().trendingMovies,
         ),
         CollectionHead(
           title: 'Now Playing',
         ),
         MovieListView(
           media: context.watch<MovieProvider>().nowPlayingMovies,
+        ),
+        CollectionHead(
+          title: 'Upcoming Movies',
+        ),
+        MovieListView(
+          media: context.watch<MovieProvider>().upcomingMovies,
+        ),
+        CollectionHead(
+          title: 'Popular',
+        ),
+        MovieListView(
+          media: context.watch<MovieProvider>().popularMovies,
         ),
         CollectionHead(
           title: 'Top Movies',

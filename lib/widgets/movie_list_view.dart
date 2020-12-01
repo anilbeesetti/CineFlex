@@ -43,21 +43,19 @@ class MovieListView extends StatelessWidget {
                 );
               }
             },
-            child: Hero(
-              tag: media[index].id,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.blueGrey[400],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                margin: EdgeInsets.only(right: 15),
-                height: 160,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    'https://image.tmdb.org/t/p/w300/${media[index].posterPath}',
-                    fit: BoxFit.cover,
-                  ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueGrey[700],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              margin: EdgeInsets.only(right: 15),
+              height: 160,
+              width: 108,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  'https://image.tmdb.org/t/p/w300/${media[index].posterPath}',
+                  fit: BoxFit.cover,
                 ),
               ),
             ),

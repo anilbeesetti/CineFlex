@@ -36,18 +36,19 @@ class _HomeScreenState extends State<HomeScreen> {
     var tvShowProvider = context.read<TvShowProvider>();
 
     dataProvider.resetTrending();
-    movieProvider.resetTopRatedMovies();
+
     tvShowProvider.resetTopRatedTvShows();
-    movieProvider.resetPopularMovies();
-    movieProvider.resetNowPlayingMovies();
 
     await dataProvider.getTrendingMedia();
-    await movieProvider.getPopularMovies();
+    await movieProvider.getTrendingMovies();
     await tvShowProvider.getPopularTvShows();
     await movieProvider.getUpcomingMovies();
+    await tvShowProvider.getTrendingTvShows();
     movieProvider.getNowPlayingMovies();
+    movieProvider.getPopularMovies();
     movieProvider.gettopRatedMovies();
     tvShowProvider.getTopRatedTvShows();
+    tvShowProvider.getOnTheAirTvShows();
     setState(() {
       isLoading = false;
     });
