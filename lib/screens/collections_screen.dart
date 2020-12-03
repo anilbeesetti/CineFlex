@@ -1,3 +1,6 @@
+import 'package:cineflex/screens/movie_screen.dart';
+import 'package:cineflex/screens/tv_show_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CollectionScreen extends StatefulWidget {
@@ -63,15 +66,41 @@ class _CollectionScreenState extends State<CollectionScreen> {
         ),
         itemBuilder: (context, index) {
           isLoading = false;
-          return Container(
-            decoration: BoxDecoration(
-                color: Colors.blueGrey[600],
-                borderRadius: BorderRadius.circular(8)),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                'https://image.tmdb.org/t/p/w300/${widget.media[index].posterPath}',
-                fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () {
+              if (widget.media[index].mediaType == 'movie') {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => MovieScreen(
+                      movie: widget.media[index],
+                    ),
+                  ),
+                );
+              } else if (widget.media[index].mediaType == 'tv') {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => TvShowScreen(
+                      tvShow: widget.media[index],
+                    ),
+                  ),
+                );
+              }
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.blueGrey[600],
+                  borderRadius: BorderRadius.circular(8)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  widget.media[index].posterPath == '' ||
+                          widget.media[index].posterPath == null
+                      ? 'https://dalk4zrp4jp3q.cloudfront.net/images/mac_YFVkNF/movie_placeholder_big_2x.png'
+                      : 'https://image.tmdb.org/t/p/w300/${widget.media[index].posterPath}',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           );

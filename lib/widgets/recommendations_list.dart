@@ -47,6 +47,7 @@ class RecommendationsList extends StatelessWidget {
               children: [
                 Container(
                   height: 150,
+                  width: MediaQuery.of(context).size.width * 0.75,
                   margin: EdgeInsets.only(right: 20, bottom: 5),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
@@ -55,10 +56,10 @@ class RecommendationsList extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
                       recommendations[index].backdropPath == null
-                          ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
+                          ? 'https://www.ghnapp.com/img/movie-placeholder.gif'
                           : 'https://image.tmdb.org/t/p/w500/${recommendations[index].backdropPath}',
                       fit: recommendations[index].backdropPath == null
-                          ? BoxFit.fill
+                          ? BoxFit.fitWidth
                           : BoxFit.cover,
                     ),
                   ),

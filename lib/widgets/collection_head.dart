@@ -1,3 +1,4 @@
+import 'package:cineflex/constansts.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -30,10 +31,16 @@ class CollectionHead extends StatelessWidget {
           TextButton(
             child: Row(
               children: [
-                Text('See all'),
+                Text(
+                  'See all',
+                  style: TextStyle(
+                    color: kAccentColor,
+                  ),
+                ),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: 16,
+                  color: kAccentColor,
                 ),
               ],
             ),

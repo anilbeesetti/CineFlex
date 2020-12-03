@@ -25,7 +25,7 @@ class PosterInfo extends StatelessWidget {
               fit: BoxFit.cover,
               image: NetworkImage(
                 posterPath == '' || posterPath == null
-                    ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
+                    ? 'https://www.ghnapp.com/img/movie-placeholder.gif'
                     : 'https://image.tmdb.org/t/p/w780/$posterPath',
               ),
             ),

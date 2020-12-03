@@ -91,7 +91,10 @@ class _PageViewWidgetState extends State<PageViewWidget> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
-                        'https://image.tmdb.org/t/p/w500/${media[index].backdropPath}',
+                        media[index].backdropPath == null ||
+                                media[index].backdropPath == ''
+                            ? 'https://www.ghnapp.com/img/movie-placeholder.gif'
+                            : 'https://image.tmdb.org/t/p/w500/${media[index].backdropPath}',
                         fit: BoxFit.cover,
                       ),
                     ),

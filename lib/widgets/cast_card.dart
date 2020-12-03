@@ -41,7 +41,9 @@ class CastCard extends StatelessWidget {
                 child: Image.network(
                   cast.profilePath != null
                       ? 'https://image.tmdb.org/t/p/w375_and_h375_face${cast.profilePath}'
-                      : 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png',
+                      : cast.gender == 1
+                          ? 'https://t3.ftcdn.net/jpg/02/72/41/88/240_F_272418844_JlbSIQ5lPDdeEzYsbkd7rufTaXvN5CzE.jpg'
+                          : 'https://t3.ftcdn.net/jpg/02/39/31/82/240_F_239318209_LGYEQn78UEZCvliNtH1FrZTnkRvilPRx.jpg',
                   fit: BoxFit.cover,
                 ),
               ),

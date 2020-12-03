@@ -94,7 +94,7 @@ class HomeTabScreen extends StatelessWidget {
               CupertinoPageRoute(
                 builder: (context) => CollectionScreen(
                   title: 'Popular Tv Shows',
-                  onLoad: loadTopRatedTvShows,
+                  onLoad: loadPopularTvShows,
                   media: context.watch<TvShowProvider>().popularTvShows,
                 ),
               ),

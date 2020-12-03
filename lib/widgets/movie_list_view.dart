@@ -54,7 +54,10 @@ class MovieListView extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  'https://image.tmdb.org/t/p/w300/${media[index].posterPath}',
+                  media[index].posterPath == null ||
+                          media[index].posterPath == ''
+                      ? 'https://www.ghnapp.com/img/movie-placeholder.gif'
+                      : 'https://image.tmdb.org/t/p/w300/${media[index].posterPath}',
                   fit: BoxFit.cover,
                 ),
               ),

@@ -42,6 +42,7 @@ class TvShowProvider with ChangeNotifier {
   Future<void> getPopularTvShows({int page}) async {
     var responseData =
         await TmdbApi.getData(DataType.popular, 'tv', page: page);
+
     _addTvShow(responseData, _popularTvShows);
   }
 

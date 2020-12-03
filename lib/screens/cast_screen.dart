@@ -31,6 +31,7 @@ class CastScreen extends StatelessWidget {
                   profilePath: cast.profilePath,
                   name: cast.name,
                   subtitle: cast.characterName,
+                  gender: cast.gender,
                   onPress: () {
                     Navigator.push(
                         context,
@@ -80,9 +81,11 @@ class CastScreenCard extends StatelessWidget {
     this.onPress,
     this.name,
     this.subtitle,
+    this.gender,
   }) : super(key: key);
 
   final String profilePath;
+  final int gender;
   final String name;
   final String subtitle;
   final VoidCallback onPress;
@@ -108,7 +111,9 @@ class CastScreenCard extends StatelessWidget {
               child: Image.network(
                 profilePath != null
                     ? 'https://image.tmdb.org/t/p/w375_and_h375_face$profilePath'
-                    : 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png',
+                    : gender == 1
+                        ? 'https://t3.ftcdn.net/jpg/02/72/41/88/240_F_272418844_JlbSIQ5lPDdeEzYsbkd7rufTaXvN5CzE.jpg'
+                        : 'https://t3.ftcdn.net/jpg/02/39/31/82/240_F_239318209_LGYEQn78UEZCvliNtH1FrZTnkRvilPRx.jpg',
                 fit: BoxFit.cover,
                 width: 80,
               ),
