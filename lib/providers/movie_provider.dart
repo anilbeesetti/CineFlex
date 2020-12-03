@@ -92,17 +92,18 @@ class MovieProvider with ChangeNotifier {
           name: cast['name'],
           characterName: cast['character'],
           creditId: cast['credit_id'],
-          profilePath: cast['profile_path']));
+          profilePath: cast['profile_path'],
+          gender: cast['gender']));
     });
     responseData['crew'].forEach((crew) {
       crewList.add(Crew(
-        id: crew['id'],
-        name: crew['name'],
-        profilePath: crew['profile_path'],
-        department: crew['department'],
-        creditId: crew['credit_id'],
-        job: crew['job'],
-      ));
+          id: crew['id'],
+          name: crew['name'],
+          profilePath: crew['profile_path'],
+          department: crew['department'],
+          creditId: crew['credit_id'],
+          job: crew['job'],
+          gender: crew['gender']));
     });
   }
 

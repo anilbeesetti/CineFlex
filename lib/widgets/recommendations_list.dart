@@ -57,7 +57,9 @@ class RecommendationsList extends StatelessWidget {
                       recommendations[index].backdropPath == null
                           ? 'https://www.seekpng.com/png/small/966-9665317_placeholder-image-person-jpg.png'
                           : 'https://image.tmdb.org/t/p/w500/${recommendations[index].backdropPath}',
-                      fit: BoxFit.cover,
+                      fit: recommendations[index].backdropPath == null
+                          ? BoxFit.fill
+                          : BoxFit.cover,
                     ),
                   ),
                 ),

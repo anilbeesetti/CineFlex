@@ -51,23 +51,11 @@ class _TvShowScreenState extends State<TvShowScreen> {
     tvShowInfo = await tvShowProvider.getTvShowDetails(widget.tvShow.id);
     director = DataHelper.setDirector(crew);
     writers = DataHelper.setWriters(crew);
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });
   }
-
-  // void getMovieInfo() async {
-  //   var movieProvider = context.read<MovieProvider>();
-  //   await movieProvider.getMovieInfo(
-  //       widget.movie.id, recommendations, cast, crew);
-  //   movieInfo = await movieProvider.getMovieDetails(widget.movie.id);
-  //   genres = movieProvider.setGenres(movieInfo.genres);
-  //   director = DataHelper.setDirector(crew);
-  //   writers = DataHelper.setWriters(crew);
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -162,14 +150,17 @@ class _TvShowScreenState extends State<TvShowScreen> {
                       : SizedBox.shrink(),
                   CastList(
                     cast: cast,
+                    crew: crew,
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  TitleText(title: 'Recommendations'),
-                  RecommendationsList(
-                    recommendations: recommendations,
-                  )
+                  if (recommendations.length != 0)
+                    TitleText(title: 'Recommendations'),
+                  if (recommendations.length != 0)
+                    RecommendationsList(
+                      recommendations: recommendations,
+                    )
                 ],
               ),
       ),

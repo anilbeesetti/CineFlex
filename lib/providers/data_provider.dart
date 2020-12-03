@@ -1,4 +1,5 @@
 import 'package:cineflex/helpers/tmdb_api.dart';
+import 'package:cineflex/models/cast_model.dart';
 import 'package:cineflex/models/movie_model.dart';
 import 'package:cineflex/models/tvshow_model.dart';
 
@@ -15,13 +16,13 @@ class DataProvider with ChangeNotifier {
 
   Future<void> getTrendingMedia() async {
     var responseData = await TmdbApi.getData(DataType.trending, 'all');
-    _addMedia(responseData);
+    _addMedia(responseData, 'results', _trending);
   }
 
-  void _addMedia(responseData) {
-    responseData['results'].forEach((media) {
+  void _addMedia(responseData, String data, List list) {
+    responseData[data].forEach((media) {
       if (media['media_type'] == 'movie') {
-        _trending.add(
+        list.add(
           Movie(
             id: media['id'],
             overview: media['overview'],
@@ -33,7 +34,7 @@ class DataProvider with ChangeNotifier {
           ),
         );
       } else if (media['media_type'] == 'tv') {
-        _trending.add(
+        list.add(
           TvShow(
             id: media['id'],
             overview: media['overview'],
@@ -47,5 +48,26 @@ class DataProvider with ChangeNotifier {
       }
     });
     notifyListeners();
+  }
+
+  Future<CastInfo> getPersonInfo(int id) async {
+    var response = await TmdbApi.getPersonInfo(id);
+    return CastInfo(
+      id: response['id'],
+      alsoKnownAs: response['also_known_as'],
+      biography: response['biography'],
+      birthDay: response['birthday'],
+      deathDay: response['deathday'],
+      knownForDepartment: response['known_for_department'],
+      placeOfBirth: response['place_of_birth'],
+    );
+  }
+
+  Future<List<Movie>> getKnownFor(int id) async {
+    var response = await TmdbApi.getKnownFor(id);
+    List<Movie> mediaList = [];
+    _addMedia(response, 'cast', mediaList);
+    _addMedia(response, 'crew', mediaList);
+    return mediaList;
   }
 }

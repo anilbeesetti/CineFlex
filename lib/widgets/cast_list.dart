@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:cineflex/screens/cast_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../constansts.dart';
@@ -9,9 +11,11 @@ class CastList extends StatelessWidget {
   const CastList({
     Key key,
     this.cast,
+    this.crew,
   }) : super(key: key);
 
   final List cast;
+  final List crew;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +27,7 @@ class CastList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               itemCount: min(9, cast.length),
               itemBuilder: (context, index) {
-                var itemcount = cast.length;
-
-                if (itemcount >= 9 && index == itemcount - 1) {
+                if (cast.length > 9 && index == 8) {
                   return Container(
                     alignment: Alignment.center,
                     child: FlatButton(
@@ -33,7 +35,16 @@ class CastList extends StatelessWidget {
                         'View More',
                         style: TextStyle(fontSize: 18, color: kAccentColor),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => CastScreen(
+                                cast: cast,
+                                crew: crew,
+                              ),
+                            ));
+                      },
                     ),
                   );
                 }

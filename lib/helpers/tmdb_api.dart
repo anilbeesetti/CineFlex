@@ -65,6 +65,19 @@ class TmdbApi {
     var response = await _getResponse(finalUrl);
     return jsonDecode(response.body);
   }
+
+  static Future<dynamic> getPersonInfo(int id) async {
+    var finalUrl = url + 'person/$id?api_key=$_ApiKey&language=en-US';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
+
+  static Future<dynamic> getKnownFor(int id) async {
+    var finalUrl =
+        url + 'person/$id/combined_credits?api_key=$_ApiKey&language=en-US';
+    var response = await _getResponse(finalUrl);
+    return jsonDecode(response.body);
+  }
 }
 // static const mainUrl =
 // 'https://api.themoviedb.org/3/movie/596161/credits?api_key=62453b82f98db30d9a499cc700064b45&language=en-US';

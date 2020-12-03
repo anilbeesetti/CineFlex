@@ -45,6 +45,7 @@ class _MovieScreenState extends State<MovieScreen> {
     genres = movieProvider.setGenres(movieInfo.genres);
     director = DataHelper.setDirector(crew);
     writers = DataHelper.setWriters(crew);
+    if (!mounted) return;
     setState(() {
       isLoading = false;
     });
@@ -100,6 +101,7 @@ class _MovieScreenState extends State<MovieScreen> {
                       : SizedBox.shrink(),
                   CastList(
                     cast: cast,
+                    crew: crew,
                   ),
                   SizedBox(
                     height: 10,
@@ -119,10 +121,12 @@ class _MovieScreenState extends State<MovieScreen> {
                         ? 'English'
                         : movie.orginalLanguage,
                   ),
-                  TitleText(title: 'Recommendations'),
-                  RecommendationsList(
-                    recommendations: recommendations,
-                  )
+                  if (recommendations.length != 0)
+                    TitleText(title: 'Recommendations'),
+                  if (recommendations.length != 0)
+                    RecommendationsList(
+                      recommendations: recommendations,
+                    )
                 ],
               ),
       ),
