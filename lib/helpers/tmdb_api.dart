@@ -56,7 +56,6 @@ class TmdbApi {
       finalUrl = url + '$dataType/$mediaType/$timePeriod?api_key=$_ApiKey';
     }
     var response = await _getResponse(finalUrl);
-    print(response.body);
     return jsonDecode(response.body);
   }
 

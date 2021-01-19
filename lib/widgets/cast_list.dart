@@ -30,7 +30,7 @@ class CastList extends StatelessWidget {
                 if (cast.length > 9 && index == 8) {
                   return Container(
                     alignment: Alignment.center,
-                    child: FlatButton(
+                    child: TextButton(
                       child: Text(
                         'View More',
                         style: TextStyle(fontSize: 18, color: kAccentColor),
